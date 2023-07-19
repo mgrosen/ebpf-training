@@ -352,7 +352,9 @@ if args.extra:
 if args.latency:
     header += " %-7s" % ("LAT(ms)")
 
-print(header)
+print("Listening for SSL traffic...")
+print("")
+
 # process event
 start = 0
 
@@ -431,9 +433,14 @@ def print_event(cpu, data, size, evt):
         'data': data
     }
 
+    data_slices = data.split('\n')
+    host = data_slices[1].split(' ')[1].strip()
+    method = data_slices[0].split(' ')[0].strip()
+    url_path = data_slices[0].split(' ')[1].strip()
+
     # use base_fmt if no buf filled
     if "Host: " in data:
-        print(data)
+        print(method, host, url_path)
 
 b["perf_SSL_rw"].open_perf_buffer(print_event_rw)
 b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake)
