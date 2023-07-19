@@ -88,7 +88,7 @@ int trace_udp_sendmsg(struct pt_regs *ctx) {
             // strncpy(val.uri_stem, data + i + 1, length);
         // }
 
-        val.uri_stem = "hi there";
+        strcpy(val.uri_stem, "hi there");
 
         //Write the value into the eBPF table:
         proc_ports.update(&key, &val);
