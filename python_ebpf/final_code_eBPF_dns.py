@@ -80,15 +80,7 @@ int trace_udp_sendmsg(struct pt_regs *ctx) {
 
         // Get the length of the DNS query data
         int data_len = ntohs(uh->len) - sizeof(struct udphdr);
-        int i = 0;
-
-        # // Find the start of the uristem field
-        # for (i = 0; i < data_len - 1; i++) {
-        #     if (data[i] == '\0' && data[i + 1] != '\0') {
-        #         // Found the start of the uristem field
-        #         break;
-        #     }
-        # }
+        int i = 1;
 
         // copy the uristem field
         int length = data_len - i;
