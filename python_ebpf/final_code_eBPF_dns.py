@@ -96,12 +96,12 @@ int trace_udp_sendmsg(struct pt_regs *ctx) {
             // strncpy(val.uri_stem, data + i + 1, length);
         // }
 
-        int length = data_len - i;
-        length = (length < 256) ? length : 255;
-        if (length > 0)
-        {
-            strcpy(val.uri_stem, data + i + 1);
-        }
+        // int length = data_len - i;
+        // length = (length < 256) ? length : 255;
+        // if (length > 0)
+        // {
+        //    strcpy(val.uri_stem, data + i + 1);
+        // }
         
         //Write the value into the eBPF table:
         proc_ports.update(&key, &val);
@@ -291,6 +291,7 @@ def print_dns(cpu, data, size):
             ("uid", ct.c_uint32),
             ("gid", ct.c_uint32),
             ("comm", ct.c_char * 64),
+            ("uri", ct.c_char * 256),
             ("raw", ct.c_ubyte * (size - ct.sizeof(ct.c_uint32 * 5) - ct.sizeof(ct.c_char * 64)))
         ]
     # We get our 'port_val' structure and also the packet itself in the 'raw' field:
