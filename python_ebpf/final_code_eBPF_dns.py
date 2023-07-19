@@ -5,9 +5,9 @@ from bcc import BPF
 from socket import if_indextoname
 
 
-C_BPF_KPROBE = """
+C_BPF_KPROBE = r'''
 #include <net/sock.h>
-// #include <bpf_helpers.h>
+#include <linux/udp.h>
 
 //the structure that will be used as a key for
 // eBPF table 'proc_ports':
@@ -141,7 +141,7 @@ int trace_tcp_sendmsg(struct pt_regs *ctx, struct sock *sk) {
     }
     return 0;
 }
-"""
+'''
 
 
 BPF_SOCK_TEXT = r'''
