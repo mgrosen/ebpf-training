@@ -38,11 +38,11 @@ BPF_TABLE_PUBLIC("hash", struct port_key, struct port_val, proc_ports, 20480);
 
 
 int trace_udp_sendmsg(struct pt_regs *ctx) {
-    bpf_print("Hello");
+    bpf_printk("Hello");
     struct sock *sk = (struct sock *)PT_REGS_PARM1(ctx);
-    bpf_print("Hello1");
+    bpf_printk("Hello1");
     struct msghdr *msg = (struct msghdr *)PT_REGS_PARM2(ctx);
-    bpf_print("Hello2");
+    bpf_printk("Hello2");
 
     // Get the URI stem from the sk_buff
     // struct sk_buff *skb = skb_recv_datagram(sk, 0, 0, NULL);
@@ -59,7 +59,7 @@ int trace_udp_sendmsg(struct pt_regs *ctx) {
         u32 daddr = sk->sk_daddr;
         u64 pid_tgid = bpf_get_current_pid_tgid();
         u64 uid_gid = bpf_get_current_uid_gid();
-        bpf_print("Hello3");
+        bpf_printk("Hello3");
 
         // Forming the structure-key.
         struct port_key key = {.proto = 17};
@@ -78,16 +78,16 @@ int trace_udp_sendmsg(struct pt_regs *ctx) {
 
         // Get the UDP header
         struct udphdr *uh = (struct udphdr *)msg->msg_iter.iov->iov_base;
-        bpf_print("Hello4");
+        bpf_printk("Hello4");
 
         // Get a pointer to the start of the DNS query data
         char *data = (char *)uh + sizeof(struct udphdr);
-        bpf_print("Hello5");
+        bpf_printk("Hello5");
 
         // Get the length of the DNS query data
         int data_len = ntohs(uh->len) - sizeof(struct udphdr);
         int i = 1;
-        bpf_print("Hello6");
+        bpf_printk("Hello6");
 
         // copy the uristem field
         // int length = data_len - i;
