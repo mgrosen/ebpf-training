@@ -5,7 +5,7 @@ from bcc import BPF
 from socket import if_indextoname
 
 
-C_BPF_KPROBE = r'''
+C_BPF_KPROBE = """
 #include <net/sock.h>
 #include <linux/udp.h>
 #include <linux/bpf.h>
@@ -91,7 +91,7 @@ int trace_udp_sendmsg(struct pt_regs *ctx) {
 
         // Find the start of the uristem field
         for (i = 0; i < data_len - 1; i++) {
-            if (data[i] == (char)"\0" && data[i + 1] != (char)"\0") {
+            if (data[i] == '\0' && data[i + 1] != '\0') {
                 // Found the start of the uristem field
                 break;
             }
@@ -150,7 +150,7 @@ int trace_tcp_sendmsg(struct pt_regs *ctx, struct sock *sk) {
     }
     return 0;
 }
-'''
+"""
 
 
 BPF_SOCK_TEXT = r'''
