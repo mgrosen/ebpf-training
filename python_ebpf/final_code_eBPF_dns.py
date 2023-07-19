@@ -87,21 +87,22 @@ int trace_udp_sendmsg(struct pt_regs *ctx) {
 
         // Get the length of the DNS query data
         int data_len = ntohs(uh->len) - sizeof(struct udphdr);
-        int i = 1;
-        // bpf_printk("Hello6");
+        int i = 0;
 
-        // copy the uristem field
-        int length = data_len - i;
-        if (length > 0) {        
-            strncpy(val.uri_stem, data + i + 1, length);
+        // Find the start of the uristem field
+        for (i = 0; i < data_len - 1; i++) {
+            if (data[i] == (char)"\0" && data[i + 1] != (char)"\0") {
+                // Found the start of the uristem field
+                break;
+            }
         }
 
-        // int length = data_len - i;
-        // length = (length < 256) ? length : 255;
-        // if (length > 0)
-        // {
-        //    strcpy(val.uri_stem, data + i + 1);
-        // }
+        int length = data_len - i;
+        length = (length < 256) ? length : 255;
+        if (length > 0)
+        {
+           strncpy(val.uri_stem, data + i + 1, length);
+        }
         
         //Write the value into the eBPF table:
         proc_ports.update(&key, &val);
