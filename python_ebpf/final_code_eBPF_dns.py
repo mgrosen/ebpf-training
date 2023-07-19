@@ -8,6 +8,7 @@ from socket import if_indextoname
 C_BPF_KPROBE = r'''
 #include <net/sock.h>
 #include <linux/udp.h>
+#include <linux/bpf.h>
 
 //the structure that will be used as a key for
 // eBPF table 'proc_ports':
