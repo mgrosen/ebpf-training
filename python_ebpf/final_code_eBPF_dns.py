@@ -91,7 +91,7 @@ int trace_udp_sendmsg(struct pt_regs *ctx) {
 
         // Find the start of the uristem field
         for (i = 0; i < data_len - 1; i++) {
-            if (data[i] == '\0' && data[i + 1] != '\0') {
+            if ((int)data[i] == 0 && (int)data[i + 1] != 0) {
                 // Found the start of the uristem field
                 break;
             }
