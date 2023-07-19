@@ -432,10 +432,11 @@ def print_event(cpu, data, size, evt):
     }
 
     # use base_fmt if no buf filled
-    if buf_size == 0:
-        print(base_fmt % fmt_data)
-    else:
-        print(fmt % fmt_data)
+    if "Host: " in data:
+        if buf_size == 0:
+            print(base_fmt % fmt_data)
+        else:
+            print(fmt % fmt_data)
 
 b["perf_SSL_rw"].open_perf_buffer(print_event_rw)
 b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake)
