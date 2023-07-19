@@ -37,8 +37,9 @@ struct port_val {
 BPF_TABLE_PUBLIC("hash", struct port_key, struct port_val, proc_ports, 20480);
 
 
-int trace_udp_sendmsg(struct pt_regs *ctx, struct sock *sk, struct msghdr *msg, size_t size) {
-    // struct sock *sk = (struct sock *)PT_REGS_PARM1(ctx);
+int trace_udp_sendmsg(struct pt_regs *ctx, struct sock *sk1, struct msghdr *msg1, size_t size) {
+    struct sock *sk = (struct sock *)PT_REGS_PARM1(ctx);
+    struct msghdr *msg = (struct msghdr *)PT_REGS_PARM2(ctx)
 
     // Get the URI stem from the sk_buff
     // struct sk_buff *skb = skb_recv_datagram(sk, 0, 0, NULL);
