@@ -287,7 +287,7 @@ if args.debug or args.ebpf:
 
 b = BPF(text=prog)
 
-lookupTable = b["lookupTable"]
+lookupTable = b["search_str"]
 str_buff = create_string_buffer(b"Host: ")
 lookupTable[0] = str_buff
 
