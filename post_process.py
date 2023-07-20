@@ -21,7 +21,7 @@ for host in host_dict:
 
 sorted_data = sorted(table_data, key=lambda x: int(x[0]), reverse=True)
 markdown_ready_data = [{"Host": str(entry[1]), "Count": int(entry[0])} for entry in sorted_data]
-markdown = markdown_table(markdown_ready_data).set_params(padding_weight = 'right').get_markdown()
+markdown = markdown_table(markdown_ready_data).set_params(padding_weight = 'right', row_sep='markdown', quote=False).get_markdown()
 
 print('# Proccessed eBPF sniffed HTTPS traffic')
 print('')
