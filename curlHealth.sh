@@ -4,7 +4,7 @@ num=4
 
 if [ $# -eq 1 ]
 then
-    num = $1
+    num=$1
 fi
 
 echo $num
