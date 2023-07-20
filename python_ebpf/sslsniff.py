@@ -161,20 +161,14 @@ static int SSL_exit(struct pt_regs *ctx, int rw) {
         if (len <= 0) // no data
                 return 0;
 
-        # copy in search string
-        for (int i = 0; i < 6; i++) {
-            int k = i;
-            char *key = lookupTable.lookup(&k);
-        }
-
         const char *buf = (const char *)bufp;
         int search_len = 6;
         int i, j;
         bool found = false;
-        int zero = 0;
+        int start = 0;
 
         for (i = 0; i < len; i++) {
-                if (buf[i] == search_str.lookup(&zero)) {
+                if (buf[i] == *search_str.lookup(&start)) {
                         for (j = 1; j < search_len; j++) {
                                 int index = j;
                                 if (i + j >= len || buf[i + j] != search_str.lookup(&index)) {
