@@ -165,10 +165,11 @@ static int SSL_exit(struct pt_regs *ctx, int rw) {
         int search_len = 6;
         int i, j;
         bool found = false;
-        int start = 0;
+        int foo = 0;
 
         for (i = 0; i < len; i++) {
-                if (buf[i] == *search_str.lookup(&start)) {
+                char *p = search_str.lookup(&foo)
+                if (buf[i] == *p) {
                         for (j = 1; j < search_len; j++) {
                                 int index = j;
                                 if (i + j >= len || buf[i + j] != search_str.lookup(&index)) {
