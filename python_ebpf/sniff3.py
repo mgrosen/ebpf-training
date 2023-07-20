@@ -447,7 +447,7 @@ def start_tracing():
     thread_name = threading.current_thread().name
     print(f"Thread {thread_name} is starting BPF tracing.")
     b["perf_SSL_rw"].open_perf_buffer(print_event_rw, page_cnt=64)
-    b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake, , page_cnt=64)
+    b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake, page_cnt=64)
     while True:
         try:
             b.perf_buffer_poll()
