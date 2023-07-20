@@ -172,7 +172,8 @@ static int SSL_exit(struct pt_regs *ctx, int rw) {
                 if (buf[i] == *p) {
                         for (j = 1; j < search_len; j++) {
                                 int index = j;
-                                if (i + j >= len || buf[i + j] != search_str.lookup(&index)) {
+                                char *foo = search_str.lookup(&index);
+                                if (i + j >= len || buf[i + j] != *foo) {
                                         break;
                                 }
                         }
