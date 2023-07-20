@@ -352,6 +352,7 @@ if args.extra:
 if args.latency:
     header += " %-7s" % ("LAT(ms)")
 
+print("Batch size ", str(args.max_buffer_size))
 print("Listening for SSL traffic...")
 print("")
 
