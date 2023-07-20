@@ -158,7 +158,7 @@ static int SSL_exit(struct pt_regs *ctx, int rw) {
         if (len <= 0) // no data
                 return 0;
 
-        const char *search_str = "Host: ";
+        char search_str[6] search_str = "Host: ";
         const char *buf = (const char *)bufp;
         int search_len = strlen(search_str);
         int i, j;
