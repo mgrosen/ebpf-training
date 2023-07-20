@@ -293,8 +293,8 @@ str_buff = create_string_buffer(b"Host: ")
 print(str_buff)
 search_str[0] = str_buff
 print(str([str(cint) for cint in search_str]))
-print(search_str[0])
-print(search_str[3])
+for i in range(6):
+    print(search_str[i])
 
 # It looks like SSL_read's arguments aren't available in a return probe so you
 # need to stash the buffer address in a map on the function entry and read it
