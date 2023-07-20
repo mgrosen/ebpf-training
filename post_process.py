@@ -3,7 +3,7 @@ import re
 
 python_hosted_regex = r"/packages/.*/(.*?)-\d+\..*"
 
-host_dict = dict[str, set]()
+host_dict = dict()
 params = set()
 
 file_path = sys.argv[1]
