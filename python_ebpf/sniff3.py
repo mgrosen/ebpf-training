@@ -388,8 +388,8 @@ def print_event(cpu, data, size, evt):
 
         print(method, host, url_path, flush=True)
 
-b["perf_SSL_rw"].open_perf_buffer(print_event_rw)
-b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake)
+b["perf_SSL_rw"].open_perf_buffer(print_event_rw, page_cnt=256)
+b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake, page_cnt=256)
 while 1:
     try:
         b.perf_buffer_poll()
