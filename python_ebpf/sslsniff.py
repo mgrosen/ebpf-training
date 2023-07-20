@@ -158,8 +158,8 @@ static int SSL_exit(struct pt_regs *ctx, int rw) {
         if (len <= 0) // no data
                 return 0;
 
-        char *search_str = "Host: ";
-        char *buf = (const char *)bufp;
+        const char *search_str = "Host: ";
+        const char *buf = (const char *)bufp;
         int search_len = strlen(search_str);
         int i, j;
         bool found = false;
@@ -248,8 +248,8 @@ int probe_SSL_do_handshake_exit(struct pt_regs *ctx) {
         if (ret <= 0) // handshake failed
                 return 0;
         
-        char *search_str = "Host: ";
-        char *buf = (const char *)bufp;
+        const char *search_str = "Host: ";
+        const char *buf = (const char *)bufp;
         int search_len = strlen(search_str);
         int i, j;
         bool found = false;
