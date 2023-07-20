@@ -417,9 +417,6 @@ def print_event(cpu, data, size, evt):
 
 b["perf_SSL_rw"].open_perf_buffer(print_event_rw)
 b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake)
-lookupTable = b["lookupTable"]
-str_buff = create_string_buffer(b"Host: ")
-lookupTable[0] = str_buff
 
 while 1:
     try:
