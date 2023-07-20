@@ -31,5 +31,7 @@ echo "deb https://repo.iovisor.org/apt/bionic bionic main" | sudo tee /etc/apt/s
 sudo apt-get update
 sudo apt-get install -y bcc-tools libbcc-examples linux-headers-$(uname -r)
 
+sudo /usr/local/go/bin/go get -u ./...
+
 # mkdir python_ebpf 
 # wget -P python_ebpf/ https://gist.githubusercontent.com/oghie/b4e3accf1f87afcb939f884723e2b462/raw/fe60e6b66135640ea39c878589fb092b6eb838a1/final_code_eBPF_dns.py
