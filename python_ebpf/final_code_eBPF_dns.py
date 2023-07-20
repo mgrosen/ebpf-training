@@ -319,15 +319,13 @@ def print_dns(cpu, data, size):
         # We are only interested in A (1) and AAAA (28) records:
         for q in dns_data.questions:
             if q.qtype == 1 or q.qtype == 28:
-                # print(f'COMM={proc_name} PID={sk.pid} TGID={sk.tgid} DEV={ifname} PROTO={NET_PROTO[proto]} SRC={saddr} DST={daddr} SPT={sport} DPT={dport} UID={sk.uid} GID={sk.gid} DNS_QR=0 DNS_NAME={q.qname} DNS_TYPE={DNS_QTYPE[q.qtype]}')
-                print(f'Query COMM={proc_name} DST={daddr} DNS_NAME={q.qname}')
+                print(f'COMM={proc_name} PID={sk.pid} TGID={sk.tgid} DEV={ifname} PROTO={NET_PROTO[proto]} SRC={saddr} DST={daddr} SPT={sport} DPT={dport} UID={sk.uid} GID={sk.gid} DNS_QR=0 DNS_NAME={q.qname} DNS_TYPE={DNS_QTYPE[q.qtype]}')
     # Response:
     elif dns_data.header.qr == 1:
         # We are only interested in A (1) and AAAA (28) records:
         for rr in dns_data.rr:
             if rr.rtype == 1 or rr.rtype == 28:
-                # print(f'COMM={proc_name} PID={sk.pid} TGID={sk.tgid} DEV={ifname} PROTO={NET_PROTO[proto]} SRC={saddr} DST={daddr} SPT={sport} DPT={dport} UID={sk.uid} GID={sk.gid} DNS_QR=1 DNS_NAME={rr.rname} DNS_TYPE={DNS_QTYPE[rr.rtype]} DNS_DATA={rr.rdata}')
-                print(f'Response COMM={proc_name} DPT={dport} DNS_NAME={rr.rname} ')
+                print(f'COMM={proc_name} PID={sk.pid} TGID={sk.tgid} DEV={ifname} PROTO={NET_PROTO[proto]} SRC={saddr} DST={daddr} SPT={sport} DPT={dport} UID={sk.uid} GID={sk.gid} DNS_QR=1 DNS_NAME={rr.rname} DNS_TYPE={DNS_QTYPE[rr.rtype]} DNS_DATA={rr.rdata}')
     else:
         print('Invalid DNS query type.')
 
