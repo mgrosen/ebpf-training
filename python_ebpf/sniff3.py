@@ -443,26 +443,26 @@ def print_event(cpu, data, size, evt):
 
         print(method, host, url_path)
 
-b["perf_SSL_rw"].open_perf_buffer(print_event_rw)
-b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake)
+def start_tracing():
+    b["perf_SSL_rw"].open_perf_buffer(print_event_rw)
+    b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake)
+    while 1:
+        try:
+            b.perf_buffer_poll()
+        except KeyboardInterrupt:
+            exit()
 
-def printHelloWorldWithThreadInfo():    
-    thread_name = threading.current_thread().name
-    print(f"From thread {thread_name}")
-    b.perf_buffer_poll()
+# Number of threads to use for event processing
+num_threads = 10
+threads = []
+for _ in range(num_threads):
+    thread = threading.Thread(target=start_tracing)
+    thread.daemon = True  # Set the thread as daemon so it will exit when the main thread exits
+    threads.append(thread)
+    thread.start()
 
-while 1:
-    try:
-        ## Create two threads
-        thread1 = threading.Thread(target=printHelloWorldWithThreadInfo)
-        thread2 = threading.Thread(target=printHelloWorldWithThreadInfo)
-
-        ## Start the threads
-        thread1.start()
-        thread2.start()
-
-        ## Wait for the threads to finish
-        thread1.join()
-        thread2.join()
-    except KeyboardInterrupt:
-        exit()
+try:
+    while True:
+        pass
+except KeyboardInterrupt:
+    exit()
