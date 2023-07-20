@@ -21,6 +21,7 @@ import binascii
 import textwrap
 import os.path
 import threading
+import time
 
 # arguments
 examples = """examples:
