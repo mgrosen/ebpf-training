@@ -357,9 +357,6 @@ if args.latency:
 print("Listening for SSL traffic...")
 print("")
 
-# process event
-start = 0
-
 def print_event_rw(cpu, data, size):
     print_event(cpu, data, size, "perf_SSL_rw")
 
