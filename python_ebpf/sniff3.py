@@ -446,23 +446,23 @@ def print_event(cpu, data, size, evt):
 def start_tracing():
     thread_name = threading.current_thread().name
     print(f"Thread {thread_name} is starting BPF tracing.")
-    b["perf_SSL_rw"].open_perf_buffer(print_event_rw)
-    b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake)
-    while 1:
-        b.perf_buffer_poll()
+    b["perf_SSL_rw"].open_perf_buffer(print_event_rw, page_cnt=64)
+    b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake, , page_cnt=64)
+    while True:
+        try:
+            b.perf_buffer_poll()
+        except KeyboardInterrupt:
+            exit()
 
 
 # Number of threads to use for event processing
 num_threads = 10
 threads = []
-for _ in range(num_threads):
-    try 
+for _ in range(num_threads): 
         thread = threading.Thread(target=start_tracing)
         thread.daemon = True  # Set the thread as daemon so it will exit when the main thread exits
         threads.append(thread)
         thread.start()
-    except KeyboardInterrupt:
-         exit()
 
 try:
     while True:
