@@ -92,6 +92,7 @@ args = parser.parse_args()
 prog = """
 #include <linux/ptrace.h>
 #include <linux/sched.h>        /* For TASK_COMM_LEN */
+#include <string.h>
 
 #define MAX_BUF_SIZE __MAX_BUF_SIZE__
 
@@ -158,21 +159,36 @@ static int SSL_exit(struct pt_regs *ctx, int rw) {
         if (len <= 0) // no data
                 return 0;
 
+        char *search_str = "Host: ";
+        char *buf = (const char *)bufp;
+        int search_len = strlen(search_str);
+        int i, j;
+        bool found = false;
+
+        for (i = 0; i < len; i++) {
+                if (buf[i] == search_str[0]) {
+                        for (j = 1; j < search_len; j++) {
+                                if (i + j >= len || buf[i + j] != search_str[j]) {
+                                        break;
+                                }
+                        }
+                        if (j == search_len) {
+                                found = true
+                        }
+                }
+        }
+
+        if(!found)
+                return 0;
+
         struct probe_SSL_data_t *data = ssl_data.lookup(&zero);
         if (!data)
                 return 0;
 
-        // data->timestamp_ns = ts;
-        // data->delta_ns = ts - *tsp;
-        // data->pid = pid;
-        // data->tid = tid;
-        // data->uid = uid;
         data->len = (u32)len;
         data->buf_filled = 0;
-        // data->rw = rw;
-        u32 buf_copy_size = min((size_t)MAX_BUF_SIZE, (size_t)len);
 
-        // bpf_get_current_comm(&data->comm, sizeof(data->comm));
+        u32 buf_copy_size = min((size_t)MAX_BUF_SIZE, (size_t)len);
 
         if (bufp != 0)
                 ret = bpf_probe_read_user(&data->buf, buf_copy_size, (char *)*bufp);
@@ -232,20 +248,35 @@ int probe_SSL_do_handshake_exit(struct pt_regs *ctx) {
         ret = PT_REGS_RC(ctx);
         if (ret <= 0) // handshake failed
                 return 0;
+        
+        char *search_str = "Host: ";
+        char *buf = (const char *)bufp;
+        int search_len = strlen(search_str);
+        int i, j;
+        bool found = false;
+
+        for (i = 0; i < len; i++) {
+                if (buf[i] == search_str[0]) {
+                        for (j = 1; j < search_len; j++) {
+                                if (i + j >= len || buf[i + j] != search_str[j]) {
+                                        break;
+                                }
+                        }
+                        if (j == search_len) {
+                                found = true
+                        }
+                }
+        }
+        
+        if(!found)
+                return 0;
 
         struct probe_SSL_data_t *data = ssl_data.lookup(&zero);
         if (!data)
                 return 0;
 
-        // data->timestamp_ns = ts;
-        // data->delta_ns = ts - *tsp;
-        // data->pid = pid;
-        // data->tid = tid;
-        // data->uid = uid;
         data->len = ret;
         data->buf_filled = 0;
-        // data->rw = 2;
-        // bpf_get_current_comm(&data->comm, sizeof(data->comm));
         start_ns.delete(&tid);
 
         perf_SSL_do_handshake.perf_submit(ctx, data, EVENT_SIZE(0));
@@ -432,7 +463,6 @@ def print_event(cpu, data, size, evt):
     #    'end': e_mark,
     #    'data': data
     #}
-
 
     if "Host: " in data:
         data_slices = data.split('\n')
