@@ -286,6 +286,10 @@ if args.debug or args.ebpf:
 
 b = BPF(text=prog)
 
+lookupTable = b["lookupTable"]
+str_buff = create_string_buffer(b"Host: ")
+lookupTable[0] = str_buff
+
 # It looks like SSL_read's arguments aren't available in a return probe so you
 # need to stash the buffer address in a map on the function entry and read it
 # on its exit (Mark Drayton)
