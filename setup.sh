@@ -34,3 +34,4 @@ sudo apt-get update
 sudo apt-get install -y bcc-tools libbcc-examples linux-headers-$(uname -r)
 
 sudo pip3 install pandas
+sudo pip3 install py_markdown_table

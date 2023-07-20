@@ -2,6 +2,7 @@
 # Download python and library
 sudo apt install -y python3-pip
 sudo pip3 install dnslib
+sudo pip3 install py_markdown_table
 
 # Copy from setup.sh on installing BCC into env
 ## Validating kernel config parameters
