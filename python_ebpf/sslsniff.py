@@ -172,7 +172,7 @@ static int SSL_exit(struct pt_regs *ctx, int rw) {
                                 }
                         }
                         if (j == search_len) {
-                                found = true
+                                found = true;
                         }
                 }
         }
@@ -246,28 +246,6 @@ int probe_SSL_do_handshake_exit(struct pt_regs *ctx) {
 
         ret = PT_REGS_RC(ctx);
         if (ret <= 0) // handshake failed
-                return 0;
-        
-        const char *search_str = "Host: ";
-        const char *buf = (const char *)bufp;
-        int search_len = strlen(search_str);
-        int i, j;
-        bool found = false;
-
-        for (i = 0; i < len; i++) {
-                if (buf[i] == search_str[0]) {
-                        for (j = 1; j < search_len; j++) {
-                                if (i + j >= len || buf[i + j] != search_str[j]) {
-                                        break;
-                                }
-                        }
-                        if (j == search_len) {
-                                found = true
-                        }
-                }
-        }
-        
-        if(!found)
                 return 0;
 
         struct probe_SSL_data_t *data = ssl_data.lookup(&zero);
