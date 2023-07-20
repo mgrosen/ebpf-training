@@ -30,8 +30,6 @@ echo "deb https://repo.iovisor.org/apt/bionic bionic main" | sudo tee /etc/apt/s
 sudo apt-get update
 sudo apt-get install -y bcc-tools libbcc-examples linux-headers-$(uname -r)
 
-sudo /usr/local/go/bin/go get -u ./...
-
 # Download bcc dependencies
 sudo wget https://ebpfsa.blob.core.windows.net/test-storage/bcc-0.28.0+18b00a90-py3.8.egg -O /usr/lib/python3/dist-packages/bcc-0.28.0+18b00a90-py3.8.egg
 sudo touch /usr/lib/python3/dist-packages/easy-install.pth
