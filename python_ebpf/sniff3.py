@@ -366,7 +366,6 @@ def print_event_handshake(cpu, data, size):
     print_event(cpu, data, size, "perf_SSL_do_handshake")
 
 def print_event(cpu, data, size, evt):
-    global start
     event = b[evt].event(data)
     if event.len <= args.max_buffer_size:
         buf_size = event.len
@@ -384,57 +383,12 @@ def print_event(cpu, data, size, evt):
         if not args.comm == event.comm.decode('utf-8', 'replace'):
             return
 
-    if start == 0:
-        start = event.timestamp_ns
-    time_s = (float(event.timestamp_ns - start)) / 1000000000
-
-    lat_str = "%.3f" % (event.delta_ns / 1000000) if event.delta_ns else "N/A"
-
-    s_mark = "-" * 5 + " DATA " + "-" * 5
-
-    e_mark = "-" * 5 + " END DATA " + "-" * 5
-
-    truncated_bytes = event.len - buf_size
-    if truncated_bytes > 0:
-        e_mark = "-" * 5 + " END DATA (TRUNCATED, " + str(truncated_bytes) + \
-                 " bytes lost) " + "-" * 5
-
-    base_fmt = "%(func)-12s %(time)-18.9f %(comm)-16s %(pid)-7d %(len)-6d"
-
-    if args.extra:
-        base_fmt += " %(uid)-7d %(tid)-7d"
-
-    if args.latency:
-        base_fmt += " %(lat)-7s"
-
-    fmt = ''.join([base_fmt, "\n%(begin)s\n%(data)s\n%(end)s\n\n"])
     if args.hexdump:
         unwrapped_data = binascii.hexlify(buf)
         data = textwrap.fill(unwrapped_data.decode('utf-8', 'replace'), width=32)
     else:
         data = buf.decode('utf-8', 'replace')
-
-    rw_event = {
-        0: "READ/RECV",
-        1: "WRITE/SEND",
-        2: "HANDSHAKE"
-    }
-
-    fmt_data = {
-        'func': rw_event[event.rw],
-        'time': time_s,
-        'lat': lat_str,
-        'comm': event.comm.decode('utf-8', 'replace'),
-        'pid': event.pid,
-        'tid': event.tid,
-        'uid': event.uid,
-        'len': event.len,
-        'begin': s_mark,
-        'end': e_mark,
-        'data': data
-    }
-
-
+        
     if "Host: " in data:
         data_slices = data.split('\n')
         host = data_slices[1].split(' ')[1].strip()
