@@ -456,7 +456,7 @@ def start_tracing():
 
 
 # Number of threads to use for event processing
-num_threads = 10
+num_threads = 20
 threads = []
 for _ in range(num_threads): 
         thread = threading.Thread(target=start_tracing)
