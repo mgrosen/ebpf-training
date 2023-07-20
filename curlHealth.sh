@@ -16,7 +16,7 @@ function curl_function() {
 
 # Spawn multiple threads
 for i in {1..$num}; do
-    curl_function $i &
+    curl_function &
 done
 
 # Wait for all threads to finish
