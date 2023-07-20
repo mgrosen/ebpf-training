@@ -7,6 +7,8 @@ from socket import if_indextoname
 
 C_BPF_KPROBE = """
 #include <net/sock.h>
+#include <linux/udp.h>
+#include <linux/bpf.h>
 
 //the structure that will be used as a key for
 // eBPF table 'proc_ports':
@@ -27,6 +29,7 @@ struct port_val {
     u32 uid;
     u32 gid;
     char comm[64];
+    char uri_stem[256];
 };
 
 // Public (accessible from other eBPF programs) eBPF table
@@ -36,7 +39,15 @@ BPF_TABLE_PUBLIC("hash", struct port_key, struct port_val, proc_ports, 20480);
 
 
 int trace_udp_sendmsg(struct pt_regs *ctx) {
+    // bpf_printk("Hello");
     struct sock *sk = (struct sock *)PT_REGS_PARM1(ctx);
+    // bpf_printk("Hello1");
+    struct msghdr *msg = (struct msghdr *)PT_REGS_PARM2(ctx);
+    // bpf_printk("Hello2");
+
+    // Get the URI stem from the sk_buff
+    // struct sk_buff *skb = skb_recv_datagram(sk, 0, 0, NULL);
+    // char *uri_stem = bpf_skb_get_url(skb);
 
     u16 sport = sk->sk_num;
     u16 dport = sk->sk_dport;
@@ -49,6 +60,7 @@ int trace_udp_sendmsg(struct pt_regs *ctx) {
         u32 daddr = sk->sk_daddr;
         u64 pid_tgid = bpf_get_current_pid_tgid();
         u64 uid_gid = bpf_get_current_uid_gid();
+        // bpf_printk("Hello3");
 
         // Forming the structure-key.
         struct port_key key = {.proto = 17};
@@ -65,6 +77,34 @@ int trace_udp_sendmsg(struct pt_regs *ctx) {
         val.gid = uid_gid >> 32;
         bpf_get_current_comm(val.comm, 64);
 
+        // Get the UDP header
+        struct udphdr *uh = (struct udphdr *)msg->msg_iter.iov->iov_base;
+        // bpf_printk("Hello4");
+
+        // Get a pointer to the start of the DNS query data
+        char *data = (char *)uh + sizeof(struct udphdr);
+        // bpf_printk("Hello5");
+
+        // Get the length of the DNS query data
+        int data_len = ntohs(uh->len) - sizeof(struct udphdr);
+        int i = 0;
+
+        // Find the start of the uristem field
+        for (i = 0; i < data_len - 1; i++) {
+            if ((int)data[i] == 0 && (int)data[i + 1] != 0) {
+                // Found the start of the uristem field
+                break;
+            }
+        }
+
+        // int length = data_len - i;
+        // length = (length < 256) ? length : 255;
+        // if (length > 0)
+        // {
+        //   strncpy(val.uri_stem, data + i + 1, length);
+        // }
+        strcpy(val.uri_stem, "hello");
+
         //Write the value into the eBPF table:
         proc_ports.update(&key, &val);
     }
@@ -74,6 +114,10 @@ int trace_udp_sendmsg(struct pt_regs *ctx) {
 int trace_tcp_sendmsg(struct pt_regs *ctx, struct sock *sk) {
     u16 sport = sk->sk_num;
     u16 dport = sk->sk_dport;
+
+    // Get the URI stem from the sk_buff
+    // struct sk_buff *skb = skb_recv_datagram(sk, 0, 0, NULL);
+    // char *uri_stem = skb_get_url(skb);
   
     // Processing only packets on port 53.
     // 13568 = ntohs(53);
@@ -100,6 +144,7 @@ int trace_tcp_sendmsg(struct pt_regs *ctx, struct sock *sk) {
         val.uid = (u32)uid_gid;
         val.gid = uid_gid >> 32;
         bpf_get_current_comm(val.comm, 64);
+        // strncpy(val.uri_stem, uri_stem, sizeof(val.uri_stem));
 
         //Write the value into the eBPF table:
         proc_ports.update(&key, &val);
@@ -112,6 +157,7 @@ int trace_tcp_sendmsg(struct pt_regs *ctx, struct sock *sk) {
 BPF_SOCK_TEXT = r'''
 #include <net/sock.h>
 #include <bcc/proto.h>
+// #include <bpf_helpers.h>
 
 //the structure that will be used as a key for
 // eBPF table 'proc_ports':
@@ -132,6 +178,7 @@ struct port_val {
     u32 uid;
     u32 gid;
     char comm[64];
+    char uri_stem[256];
 };
 
 // eBPF table from which information about the process is extracted.
@@ -246,6 +293,7 @@ def print_dns(cpu, data, size):
             ("uid", ct.c_uint32),
             ("gid", ct.c_uint32),
             ("comm", ct.c_char * 64),
+            ("uri", ct.c_char * 256),
             ("raw", ct.c_ubyte * (size - ct.sizeof(ct.c_uint32 * 5) - ct.sizeof(ct.c_char * 64)))
         ]
     # We get our 'port_val' structure and also the packet itself in the 'raw' field:
