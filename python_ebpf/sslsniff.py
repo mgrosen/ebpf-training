@@ -290,9 +290,9 @@ b = BPF(text=prog)
 search_str = b["search_str"]
 print(search_str)
 str_buff = create_string_buffer(b"Host: ")
-print(search_str)
+print(str_buff)
 search_str[0] = str_buff
-print(search_str)
+print(str([char for char in search_str]))
 
 # It looks like SSL_read's arguments aren't available in a return probe so you
 # need to stash the buffer address in a map on the function entry and read it
