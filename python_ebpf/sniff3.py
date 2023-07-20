@@ -20,8 +20,7 @@ import argparse
 import binascii
 import textwrap
 import os.path
-import threading
-import time
+import threading 
 
 # arguments
 examples = """examples:
@@ -284,10 +283,10 @@ def attach_openssl(lib):
                     fn_name="probe_SSL_rw_enter", pid=args.pid or -1)
     b.attach_uretprobe(name=lib, sym="SSL_write",
                        fn_name="probe_SSL_write_exit", pid=args.pid or -1)
-    b.attach_uprobe(name=lib, sym="SSL_read",
-                    fn_name="probe_SSL_rw_enter", pid=args.pid or -1)
-    b.attach_uretprobe(name=lib, sym="SSL_read",
-                       fn_name="probe_SSL_read_exit", pid=args.pid or -1)
+    #b.attach_uprobe(name=lib, sym="SSL_read",
+    #                fn_name="probe_SSL_rw_enter", pid=args.pid or -1)
+    #b.attach_uretprobe(name=lib, sym="SSL_read",
+    #                   fn_name="probe_SSL_read_exit", pid=args.pid or -1)
     if args.latency and args.handshake:
         b.attach_uprobe(name="ssl", sym="SSL_do_handshake",
                         fn_name="probe_SSL_do_handshake_enter", pid=args.pid or -1)
@@ -299,10 +298,10 @@ def attach_gnutls(lib):
                     fn_name="probe_SSL_rw_enter", pid=args.pid or -1)
     b.attach_uretprobe(name=lib, sym="gnutls_record_send",
                        fn_name="probe_SSL_write_exit", pid=args.pid or -1)
-    b.attach_uprobe(name=lib, sym="gnutls_record_recv",
-                    fn_name="probe_SSL_rw_enter", pid=args.pid or -1)
-    b.attach_uretprobe(name=lib, sym="gnutls_record_recv",
-                       fn_name="probe_SSL_read_exit", pid=args.pid or -1)
+    #b.attach_uprobe(name=lib, sym="gnutls_record_recv",
+    #                fn_name="probe_SSL_rw_enter", pid=args.pid or -1)
+    #b.attach_uretprobe(name=lib, sym="gnutls_record_recv",
+    #                   fn_name="probe_SSL_read_exit", pid=args.pid or -1)
 
 def attach_nss(lib):
     b.attach_uprobe(name=lib, sym="PR_Write",
@@ -313,14 +312,14 @@ def attach_nss(lib):
                     fn_name="probe_SSL_rw_enter", pid=args.pid or -1)
     b.attach_uretprobe(name=lib, sym="PR_Send",
                        fn_name="probe_SSL_write_exit", pid=args.pid or -1)
-    b.attach_uprobe(name=lib, sym="PR_Read",
-                    fn_name="probe_SSL_rw_enter", pid=args.pid or -1)
-    b.attach_uretprobe(name=lib, sym="PR_Read",
-                       fn_name="probe_SSL_read_exit", pid=args.pid or -1)
-    b.attach_uprobe(name=lib, sym="PR_Recv",
-                    fn_name="probe_SSL_rw_enter", pid=args.pid or -1)
-    b.attach_uretprobe(name=lib, sym="PR_Recv",
-                       fn_name="probe_SSL_read_exit", pid=args.pid or -1)
+    #b.attach_uprobe(name=lib, sym="PR_Read",
+    #                fn_name="probe_SSL_rw_enter", pid=args.pid or -1)
+    #b.attach_uretprobe(name=lib, sym="PR_Read",
+    #                   fn_name="probe_SSL_read_exit", pid=args.pid or -1)
+    #b.attach_uprobe(name=lib, sym="PR_Recv",
+    #                fn_name="probe_SSL_rw_enter", pid=args.pid or -1)
+    #b.attach_uretprobe(name=lib, sym="PR_Recv",
+    #                   fn_name="probe_SSL_read_exit", pid=args.pid or -1)
 
 
 LIB_TRACERS = {
@@ -344,9 +343,12 @@ if args.extra_lib:
 
 # define output data structure in Python
 
+print("Batch size ", str(args.max_buffer_size), flush=True)
+print("Listening for SSL traffic...", flush=True)
+print("", flush=True)
 
-print("Listening for SSL traffic...")
-print("")
+# process event
+start = 0
 
 def print_event_rw(cpu, data, size):
     print_event(cpu, data, size, "perf_SSL_rw")
@@ -355,6 +357,7 @@ def print_event_handshake(cpu, data, size):
     print_event(cpu, data, size, "perf_SSL_do_handshake")
 
 def print_event(cpu, data, size, evt):
+    global start
     event = b[evt].event(data)
     if event.len <= args.max_buffer_size:
         buf_size = event.len
@@ -377,14 +380,14 @@ def print_event(cpu, data, size, evt):
         data = textwrap.fill(unwrapped_data.decode('utf-8', 'replace'), width=32)
     else:
         data = buf.decode('utf-8', 'replace')
-        
+
     if "Host: " in data:
         data_slices = data.split('\n')
         host = data_slices[1].split(' ')[1].strip()
         method = data_slices[0].split(' ')[0].strip()
         url_path = data_slices[0].split(' ')[1].strip()
 
-        print(method, host, url_path)
+        print(method, host, url_path, flush=True)
 
 def start_tracing():
     thread_name = threading.current_thread().name
@@ -394,7 +397,6 @@ def start_tracing():
     while True:
         try:
             b.perf_buffer_poll()
-            time.sleep(1)
         except KeyboardInterrupt:
             exit()
 
@@ -413,3 +415,4 @@ try:
         pass
 except KeyboardInterrupt:
     exit()
+
