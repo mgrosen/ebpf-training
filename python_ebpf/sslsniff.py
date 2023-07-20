@@ -96,15 +96,15 @@ prog = """
 #define MAX_BUF_SIZE __MAX_BUF_SIZE__
 
 struct probe_SSL_data_t {
-        u64 timestamp_ns;
-        u64 delta_ns;
-        u32 pid;
-        u32 tid;
-        u32 uid;
+        // u64 timestamp_ns;
+        // u64 delta_ns;
+        // u32 pid;
+        // u32 tid;
+        // u32 uid;
         u32 len;
         int buf_filled;
-        int rw;
-        char comm[TASK_COMM_LEN];
+        // int rw;
+        // char comm[TASK_COMM_LEN];
         u8 buf[MAX_BUF_SIZE];
 };
 
@@ -162,17 +162,17 @@ static int SSL_exit(struct pt_regs *ctx, int rw) {
         if (!data)
                 return 0;
 
-        data->timestamp_ns = ts;
-        data->delta_ns = ts - *tsp;
-        data->pid = pid;
-        data->tid = tid;
-        data->uid = uid;
+        // data->timestamp_ns = ts;
+        // data->delta_ns = ts - *tsp;
+        // data->pid = pid;
+        // data->tid = tid;
+        // data->uid = uid;
         data->len = (u32)len;
         data->buf_filled = 0;
-        data->rw = rw;
+        // data->rw = rw;
         u32 buf_copy_size = min((size_t)MAX_BUF_SIZE, (size_t)len);
 
-        bpf_get_current_comm(&data->comm, sizeof(data->comm));
+        // bpf_get_current_comm(&data->comm, sizeof(data->comm));
 
         if (bufp != 0)
                 ret = bpf_probe_read_user(&data->buf, buf_copy_size, (char *)*bufp);
@@ -237,15 +237,15 @@ int probe_SSL_do_handshake_exit(struct pt_regs *ctx) {
         if (!data)
                 return 0;
 
-        data->timestamp_ns = ts;
-        data->delta_ns = ts - *tsp;
-        data->pid = pid;
-        data->tid = tid;
-        data->uid = uid;
+        // data->timestamp_ns = ts;
+        // data->delta_ns = ts - *tsp;
+        // data->pid = pid;
+        // data->tid = tid;
+        // data->uid = uid;
         data->len = ret;
         data->buf_filled = 0;
-        data->rw = 2;
-        bpf_get_current_comm(&data->comm, sizeof(data->comm));
+        // data->rw = 2;
+        // bpf_get_current_comm(&data->comm, sizeof(data->comm));
         start_ns.delete(&tid);
 
         perf_SSL_do_handshake.perf_submit(ctx, data, EVENT_SIZE(0));
