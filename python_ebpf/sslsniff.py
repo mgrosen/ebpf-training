@@ -446,14 +446,16 @@ def print_event(cpu, data, size, evt):
 b["perf_SSL_rw"].open_perf_buffer(print_event_rw)
 b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake)
 
-def pollFunction():
+def printHelloWorldWithThreadInfo():
     b.perf_buffer_poll()
+    thread_name = threading.current_thread().name
+    print(f"From thread {thread_name}")
 
 while 1:
     try:
         ## Create two threads
-        thread1 = threading.Thread(target=pollFunction)
-        thread2 = threading.Thread(target=pollFunction)
+        thread1 = threading.Thread(target=printHelloWorldWithThreadInfo)
+        thread2 = threading.Thread(target=printHelloWorldWithThreadInfo)
 
         ## Start the threads
         thread1.start()
