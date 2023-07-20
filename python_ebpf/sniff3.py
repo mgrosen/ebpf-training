@@ -444,6 +444,8 @@ def print_event(cpu, data, size, evt):
         print(method, host, url_path)
 
 def start_tracing():
+    thread_name = threading.current_thread().name
+    print(f"Thread {thread_name} is starting BPF tracing.")
     b["perf_SSL_rw"].open_perf_buffer(print_event_rw)
     b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake)
     while 1:
