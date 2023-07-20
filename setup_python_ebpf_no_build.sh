@@ -15,8 +15,7 @@ sudo apt-get install -y bpfcc-tools linux-headers-$(uname -r)
 
 # echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
 wget https://go.dev/dl/go1.20.6.linux-amd64.tar.gz
-sudo su
-rm -rf /usr/local/go && tar -C /usr/local -xzf go1.20.6.linux-amd64.tar.gz
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.6.linux-amd64.tar.gz
 
 export PATH=$PATH:/usr/local/go/bin
 /usr/local/go/bin/go version
@@ -32,18 +31,6 @@ sudo apt-get update
 sudo apt-get install -y bcc-tools libbcc-examples linux-headers-$(uname -r)
 
 sudo /usr/local/go/bin/go get -u ./...
-
-cd ~
-git clone https://github.com/iovisor/bcc.git # Cloned into new directory on the VM
-mkdir bcc/build; cd bcc/build
-cmake ..
-make
-sudo make install
-cmake -DPYTHON_CMD=python3 .. # build python3 binding
-pushd src/python/
-make
-sudo make install
-popd
 
 # mkdir python_ebpf 
 # wget -P python_ebpf/ https://gist.githubusercontent.com/oghie/b4e3accf1f87afcb939f884723e2b462/raw/fe60e6b66135640ea39c878589fb092b6eb838a1/final_code_eBPF_dns.py

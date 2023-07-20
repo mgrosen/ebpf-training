@@ -1,0 +1,13 @@
+neo4j
+pandas
+mysql-connector-python
+pyodbc
+azure-core
+azure-storage-blob
+azure-storage-common
+azure-storage-file-datalake
+azure-identity
+requests-oauthlib
+pyarrow
+gremlinpython
+pendulum
