@@ -1,9 +1,6 @@
 import threading
 
 ## Function to print hello world with threads
-def printHelloWorldWithThreadInfo  import threading
-
-## Function to print hello world with threads
 def printHelloWorldWithThreadInfo():
     thread_name = threading.current_thread().name
     print(f"Hello, World! from thread {thread_name}")
