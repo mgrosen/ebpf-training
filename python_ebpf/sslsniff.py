@@ -444,8 +444,22 @@ def print_event(cpu, data, size, evt):
 
 b["perf_SSL_rw"].open_perf_buffer(print_event_rw)
 b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake)
+
+def printHelloWorldWithThreadInfo():
+    b.perf_buffer_poll()
+
 while 1:
     try:
-        b.perf_buffer_poll()
+        ## Create two threads
+        thread1 = threading.Thread(target=printHelloWorldWithThreadInfo)
+        thread2 = threading.Thread(target=printHelloWorldWithThreadInfo)
+
+        ## Start the threads
+        thread1.start()
+        thread2.start()
+
+        ## Wait for the threads to finish
+        thread1.join()
+        thread2.join()
     except KeyboardInterrupt:
         exit()
