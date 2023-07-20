@@ -15,8 +15,7 @@ sudo apt-get install -y bpfcc-tools linux-headers-$(uname -r)
 
 # echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
 wget https://go.dev/dl/go1.20.6.linux-amd64.tar.gz
-sudo su
-rm -rf /usr/local/go && tar -C /usr/local -xzf go1.20.6.linux-amd64.tar.gz
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.6.linux-amd64.tar.gz
 
 export PATH=$PATH:/usr/local/go/bin
 /usr/local/go/bin/go version
