@@ -405,6 +405,7 @@ def start_tracing():
     while True:
         try:
             b.perf_buffer_poll()
+            time.sleep(1)
         except KeyboardInterrupt:
             exit()
 
