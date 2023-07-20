@@ -345,15 +345,6 @@ if args.extra_lib:
 # define output data structure in Python
 
 
-# header
-header = "%-12s %-18s %-16s %-7s %-7s" % ("FUNC", "TIME(s)", "COMM", "PID", "LEN")
-
-if args.extra:
-    header += " %-7s %-7s" % ("UID", "TID")
-
-if args.latency:
-    header += " %-7s" % ("LAT(ms)")
-
 print("Listening for SSL traffic...")
 print("")
 
