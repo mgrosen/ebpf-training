@@ -1,7 +1,7 @@
 import sys
-import re
-
-python_hosted_regex = r"/packages/.*/(.*?)-\d+\..*"
+from py_markdown_table.markdown_table import markdown_table
+#import re
+#python_hosted_regex = r"/packages/.*/(.*?)-\d+\..*"
 
 host_dict = dict()
 params = set()
@@ -15,16 +15,21 @@ with open(file_path, 'r') as file:
             url = parts[2]
             host_dict.setdefault(parts[1], set()).add(url)
 
-for host in [host for host in host_dict if host != 'pypi.org']:
-    print("%s url hitting %s in this workflow" % (str(len(host_dict[host])), host))
+table_data = []
 
+for host in host_dict:
+    table_data += [(str(len(host_dict[host])), host)]
+
+sorted_data = sorted(table_data, key=lambda x: int(x[0]), reverse=True)
+markdown_ready_data = [{"Host": str(entry[1]), "Count": int(entry[0])} for entry in sorted_data]
+markdown = markdown_table(markdown_ready_data).set_params(padding_weight = 'right').get_markdown()
+
+print('# Proccessed eBPF sniffed HTTPS traffic')
+print("## Host query counts ")
+print(markdown)
 print("")
-
 ## python packages
-print("from pypi.org there are %s packages downloaded in this workflow: " % str(len(host_dict['pypi.org']) + len(host_dict['files.pythonhosted.org'])))
-for url in host_dict['pypi.org']:
+print(" ## Python packages downloaded in this workflow: ")
+sorted_python_packages = sorted(host_dict['pypi.org'], key=lambda x: x.split("/")[2])
+for url in sorted_python_packages:
     print("- %s" % url.split("/")[2])
-for url in host_dict['files.pythonhosted.org']:
-    match = re.search(python_hosted_regex, url)
-    if match:
-        print("- %s" % match.group(1))
