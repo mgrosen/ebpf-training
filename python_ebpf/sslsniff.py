@@ -294,6 +294,7 @@ print(str_buff)
 search_str[0] = str_buff
 print(str([str(cint) for cint in search_str]))
 for i in range(6):
+    search_str[i] = str_buff[i]
     print(search_str[i])
 
 # It looks like SSL_read's arguments aren't available in a return probe so you
