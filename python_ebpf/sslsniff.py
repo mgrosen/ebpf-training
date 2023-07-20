@@ -15,6 +15,7 @@
 #
 
 from __future__ import print_function
+from ctypes import *
 from bcc import BPF
 import argparse
 import binascii
@@ -117,7 +118,7 @@ BPF_PERF_OUTPUT(perf_SSL_rw);
 BPF_HASH(start_ns, u32);
 BPF_HASH(bufs, u32, u64);
 
-BPF_ARRAY(search_str, char, 512);
+BPF_ARRAY(search_str, char, 6);
 
 int probe_SSL_rw_enter(struct pt_regs *ctx, void *ssl, void *buf, int num) {
         int ret;
@@ -170,10 +171,10 @@ static int SSL_exit(struct pt_regs *ctx, int rw) {
         int search_len = 6;
         int i, j;
         bool found = false;
-        int start = 0;
+        int zero = 0;
 
         for (i = 0; i < len; i++) {
-                if (buf[i] == search_str.lookup(&start)) {
+                if (buf[i] == search_str.lookup(&zero)) {
                         for (j = 1; j < search_len; j++) {
                                 int index = j;
                                 if (i + j >= len || buf[i + j] != search_str.lookup(&index)) {
@@ -400,55 +401,11 @@ def print_event(cpu, data, size, evt):
         if not args.comm == event.comm.decode('utf-8', 'replace'):
             return
 
-    #if start == 0:
-    #    start = event.timestamp_ns
-    #time_s = (float(event.timestamp_ns - start)) / 1000000000
-
-    #lat_str = "%.3f" % (event.delta_ns / 1000000) if event.delta_ns else "N/A"
-
-    #s_mark = "-" * 5 + " DATA " + "-" * 5
-
-    #e_mark = "-" * 5 + " END DATA " + "-" * 5
-
-    #truncated_bytes = event.len - buf_size
-    #if truncated_bytes > 0:
-      #  e_mark = "-" * 5 + " END DATA (TRUNCATED, " + str(truncated_bytes) + \
-       #         " bytes lost) " + "-" * 5
-
-    #base_fmt = "%(func)-12s %(time)-18.9f %(comm)-16s %(pid)-7d %(len)-6d"
-
-    #if args.extra:
-     #   base_fmt += " %(uid)-7d %(tid)-7d"
-
-    #if args.latency:
-     #   base_fmt += " %(lat)-7s"
-
-    #fmt = ''.join([base_fmt, "\n%(begin)s\n%(data)s\n%(end)s\n\n"])
     if args.hexdump:
         unwrapped_data = binascii.hexlify(buf)
         data = textwrap.fill(unwrapped_data.decode('utf-8', 'replace'), width=32)
     else:
         data = buf.decode('utf-8', 'replace')
-
-    #rw_event = {
-    #    0: "READ/RECV",
-    #    1: "WRITE/SEND",
-    #    2: "HANDSHAKE"
-    #}
-
-    #fmt_data = {
-    #    'func': rw_event[event.rw],
-    #    'time': time_s,
-    #    'lat': lat_str,
-    #    'comm': event.comm.decode('utf-8', 'replace'),
-    #    'pid': event.pid,
-    #    'tid': event.tid,
-    #    'uid': event.uid,
-    #    'len': event.len,
-    #    'begin': s_mark,
-    #    'end': e_mark,
-    #    'data': data
-    #}
 
     if "Host: " in data:
         data_slices = data.split('\n')
@@ -460,6 +417,10 @@ def print_event(cpu, data, size, evt):
 
 b["perf_SSL_rw"].open_perf_buffer(print_event_rw)
 b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake)
+lookupTable = b["lookupTable"]
+str_buff = create_string_buffer(b"Host: ")
+lookupTable[0] = str_buff
+
 while 1:
     try:
         b.perf_buffer_poll()
