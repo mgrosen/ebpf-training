@@ -446,10 +446,10 @@ def print_event(cpu, data, size, evt):
 b["perf_SSL_rw"].open_perf_buffer(print_event_rw)
 b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake)
 
-def printHelloWorldWithThreadInfo():
-    b.perf_buffer_poll()
+def printHelloWorldWithThreadInfo():    
     thread_name = threading.current_thread().name
     print(f"From thread {thread_name}")
+    b.perf_buffer_poll()
 
 while 1:
     try:
