@@ -117,6 +117,8 @@ BPF_PERF_OUTPUT(perf_SSL_rw);
 BPF_HASH(start_ns, u32);
 BPF_HASH(bufs, u32, u64);
 
+BPF_ARRAY(search_str, char, 512);
+
 int probe_SSL_rw_enter(struct pt_regs *ctx, void *ssl, void *buf, int num) {
         int ret;
         u32 zero = 0;
@@ -158,16 +160,23 @@ static int SSL_exit(struct pt_regs *ctx, int rw) {
         if (len <= 0) // no data
                 return 0;
 
-        unsigned long search_str[6];
+        # copy in search string
+        for (int i = 0; i < 6; i++) {
+            int k = i;
+            char *key = lookupTable.lookup(&k);
+        }
+
         const char *buf = (const char *)bufp;
-        int search_len = strlen(search_str);
+        int search_len = 6;
         int i, j;
         bool found = false;
+        int start = 0;
 
         for (i = 0; i < len; i++) {
-                if (buf[i] == search_str[0]) {
+                if (buf[i] == search_str.lookup(&start)) {
                         for (j = 1; j < search_len; j++) {
-                                if (i + j >= len || buf[i + j] != search_str[j]) {
+                                int index = j;
+                                if (i + j >= len || buf[i + j] != search_str.lookup(&index)) {
                                         break;
                                 }
                         }
