@@ -1,4 +1,5 @@
 import sys
+from py_markdown_table.markdown_table import markdown_table
 
 file_path = sys.argv[1]
 
@@ -21,7 +22,10 @@ for entry in data:
         filtered_data.append(entry)
         dst_set.add(entry["DST"])
 
-print("# Processed eBPF sniffed DNS DATA")
+# Generate the markdown table
+table_data = [{"COMM": entry["COMM"], "DST": entry["DST"], "DNS_NAME": entry["DNS_NAME"]} for entry in filtered_data]
+markdown = markdown_table(table_data).set_params(padding_weight='right', row_sep='markdown', quote=False).get_markdown()
 
-for entry in filtered_data:
-    print(f"- COMM: {entry['COMM']}, DST: {entry['DST']}, DNS_NAME: {entry['DNS_NAME']}")
+print("# Processed eBPF sniffed DNS")
+print("")
+print(markdown)
