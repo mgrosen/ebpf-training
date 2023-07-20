@@ -352,9 +352,9 @@ if args.extra:
 if args.latency:
     header += " %-7s" % ("LAT(ms)")
 
-print("Batch size ", str(args.max_buffer_size))
-print("Listening for SSL traffic...")
-print("")
+print("Batch size ", str(args.max_buffer_size), flush=True)
+print("Listening for SSL traffic...", flush=True)
+print("", flush=True)
 
 # process event
 start = 0
@@ -441,7 +441,7 @@ def print_event(cpu, data, size, evt):
         method = data_slices[0].split(' ')[0].strip()
         url_path = data_slices[0].split(' ')[1].strip()
 
-        print(method, host, url_path)
+        print(method, host, url_path, flush=True)
 
 b["perf_SSL_rw"].open_perf_buffer(print_event_rw)
 b["perf_SSL_do_handshake"].open_perf_buffer(print_event_handshake)
