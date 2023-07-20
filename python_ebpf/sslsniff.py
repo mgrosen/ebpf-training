@@ -291,10 +291,15 @@ search_str = b["search_str"]
 print(search_str)
 str_buff = create_string_buffer(b"Host: ")
 print(str_buff)
-search_str[0] = str_buff
+#search_str[0] = str_buff
+search_str[0] = c_char(int('H'))
+search_str[1] = c_char(int('o'))
+search_str[2] = c_char(int('s'))
+search_str[3] = c_char(int('t'))
+search_str[4] = c_char(int(':'))
+search_str[5] = c_char(int(' '))
 print(str([str(cint) for cint in search_str]))
 for i in range(6):
-    search_str[i] = str_buff[i]
     print(search_str[i])
 
 # It looks like SSL_read's arguments aren't available in a return probe so you
