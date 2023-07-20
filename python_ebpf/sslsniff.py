@@ -92,7 +92,6 @@ args = parser.parse_args()
 prog = """
 #include <linux/ptrace.h>
 #include <linux/sched.h>        /* For TASK_COMM_LEN */
-#include <string.h>
 
 #define MAX_BUF_SIZE __MAX_BUF_SIZE__
 
