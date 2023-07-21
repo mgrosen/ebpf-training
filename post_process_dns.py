@@ -16,7 +16,7 @@ with open(file_path, 'r') as file:
             dst = parts[6].split("=")[1]
             dns_name = parts[12].split("=")[1]
             dns_data = ""
-            if len(parts) == 15
+            if len(parts) == 15:
                 dns_data = parts[14].split("=")[1]
             host_dict.setdefault(comm, []).append((proto, src, dst, dns_name, dns_data))
 
