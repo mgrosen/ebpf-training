@@ -23,7 +23,7 @@ with open(file_path, 'r') as file:
 markdown_data = []
 for comm, entries in host_dict.items():
     for entry in entries:
-        proto, src, dst, dns_name = entry
+        proto, src, dst, dns_name, dns_data = entry
         markdown_data.append({"COMM": comm, "PROTO": proto, "SRC": src, "DST": dst, "DNS_NAME": dns_name, "DNS_DATA": dns_data})
 
 if len(markdown_data) > 0:
