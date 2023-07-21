@@ -1,31 +1,36 @@
 import sys
 from py_markdown_table.markdown_table import markdown_table
 
+host_dict = dict()
+
 file_path = sys.argv[1]
 
-data = []
-
 with open(file_path, 'r') as file:
-    for line in file:
-        fields = line.strip().split()
-        if len(fields) >= 14:
-            comm = fields[0].split("=")[1]
-            dst = fields[9].split("=")[1]
-            dns_name = fields[12].split("=")[1]
-            data.append({"COMM": comm, "DST": dst, "DNS_NAME": dns_name})
+    lines = file.readlines()[3:]
+    for line in lines:
+        parts = line.split()
+        if len(parts) >= 14:
+            comm = parts[0].split("=")[1]
+            proto = parts[3].split("=")[1]
+            src = parts[5].split("=")[1]
+            dst = parts[7].split("=")[1]
+            dns_name = parts[13].split("=")[1]
+            host_dict.setdefault(comm, []).append((proto, src, dst, dns_name))
 
-# Filter out duplicate entries based on DST
-filtered_data = []
-dst_set = set()
-for entry in data:
-    if entry["DST"] not in dst_set:
-        filtered_data.append(entry)
-        dst_set.add(entry["DST"])
+markdown_data = []
+for comm, entries in host_dict.items():
+    for entry in entries:
+        proto, src, dst, dns_name = entry
+        markdown_data.append({"COMM": comm, "PROTO": proto, "SRC": src, "DST": dst, "DNS_NAME": dns_name})
 
-# Generate the markdown table
-table_data = [{"COMM": entry["COMM"], "DST": entry["DST"], "DNS_NAME": entry["DNS_NAME"]} for entry in filtered_data]
-markdown = markdown_table(table_data).set_params(padding_weight='right', row_sep='markdown', quote=False).get_markdown()
+if len(markdown_data) > 0:
+    sorted_data = sorted(markdown_data, key=lambda x: x["COMM"])
+    markdown = markdown_table(sorted_data).set_params(padding_weight='right', row_sep='markdown', quote=False).get_markdown()
 
-print("# Processed eBPF sniffed DNS")
-print("")
-print(markdown)
+    print('# Processed eBPF sniffed HTTPS traffic')
+    print('')
+    print("## DNS Queries")
+    print('')
+    print(markdown)
+else:
+    print("No valid data found in the input file.")
