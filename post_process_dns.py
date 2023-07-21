@@ -11,10 +11,10 @@ with open(file_path, 'r') as file:
         parts = line.split()
         if len(parts) >= 14:
             comm = parts[0].split("=")[1]
-            proto = parts[3].split("=")[1]
+            proto = parts[4].split("=")[1]
             src = parts[5].split("=")[1]
-            dst = parts[7].split("=")[1]
-            dns_name = parts[13].split("=")[1]
+            dst = parts[6].split("=")[1]
+            dns_name = parts[12].split("=")[1]
             host_dict.setdefault(comm, []).append((proto, src, dst, dns_name))
 
 markdown_data = []
