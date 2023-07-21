@@ -15,13 +15,16 @@ with open(file_path, 'r') as file:
             src = parts[5].split("=")[1]
             dst = parts[6].split("=")[1]
             dns_name = parts[12].split("=")[1]
-            host_dict.setdefault(comm, []).append((proto, src, dst, dns_name))
+            dns_data = ""
+            if len(parts) == 15
+                dns_data = parts[14].split("=")[1]
+            host_dict.setdefault(comm, []).append((proto, src, dst, dns_name, dns_data))
 
 markdown_data = []
 for comm, entries in host_dict.items():
     for entry in entries:
         proto, src, dst, dns_name = entry
-        markdown_data.append({"COMM": comm, "PROTO": proto, "SRC": src, "DST": dst, "DNS_NAME": dns_name})
+        markdown_data.append({"COMM": comm, "PROTO": proto, "SRC": src, "DST": dst, "DNS_NAME": dns_name, "DNS_DATA": dns_data})
 
 if len(markdown_data) > 0:
     sorted_data = sorted(markdown_data, key=lambda x: x["COMM"])
